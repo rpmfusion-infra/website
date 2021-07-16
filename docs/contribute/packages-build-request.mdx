@@ -1,0 +1,60 @@
+---
+id: build-pkg
+title: Request to build a package
+sidebar_label: Build a package
+sidebar_position: 3
+---
+
+
+1. [Set up your environment](/docs/contribute/new-pkg-submit#import-your-package)
+
+1. Retrieve the package configuration (if not done already)
+    ```shell
+    rfpkg clone free/my_package
+    cd my_package
+    ```
+
+    :::tip
+    You may also request a scratch build to test build before do a git commit and push .
+
+    ```shell
+    rfpkg --release f34 scratch-build --arches ppc64le --srpm
+    ```
+    :::
+
+1. Upload source, commit changes and push them
+    ```shell
+    rfpkg new-sources my_packager-1.0.tar.gz
+    rfpkg commit
+    rfpkg push
+    ```
+
+1. Request a build to the koji server
+    ```shell
+    rfpkg build
+    ```
+
+    This will trigger a build request for the branch. Easy!
+    You can check the status of the build process from the [koji web interface](http://koji.rpmfusion.org/koji/tasks).
+
+
+:::tip If SSL certificate has expired
+If during import you get the following error:
+
+> Could not execute import_srpm: (35, 'Peer reports failure of signature verification or key exchange.')
+
+1. Check your certificate validity
+    ```shell
+    rpmfusion-cert -v for verify
+    ```
+1. Renew your certificates
+    ```shell
+    rpmfusion-cert -n
+    ```
+
+* Update your certificate the old-school way:
+    ```shell
+    wget https://admin.rpmfusion.org/accounts/user/gencert -O ~/.rpmfusion.cert
+    ```
+
+

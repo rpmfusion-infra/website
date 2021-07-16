@@ -1,0 +1,106 @@
+---
+id: new-pkg-submit
+title: Submit a new package to RPM Fusion
+sidebar_label: Submit a new package
+sidebar_position: 2
+---
+
+
+RPM Fusion follows the [Fedora packaging guidelines](https://docs.fedoraproject.org/en-US/packaging-guidelines/), so make sure you've read and understood them.
+Also, please read our [Kmod standard guidelines](/docs/contribute/pkg-kmod) if you will be packaging external kernel modules.
+
+
+## Create a package review request
+
+1. Upload your SRPM and SPEC files to any accessible location on the internet.
+
+1. Create a [new bug report](https://bugzilla.rpmfusion.org/enter_bug.cgi?product=Package%20Reviews).
+1. Set Summary to: `Review request: <package_name> - <package_summary>`.
+1. Put the following in the Description field:
+
+    * The Full public URLs to the spec file and source rpm of the package.
+    * A short description for the package (usually, the `%description` content from the spec file).
+    * A description of why this package is not eligible to be included in Fedora.
+    * The output that rpmlint gives on both the source (SRPM) and built binary packages.
+    :::note
+    Explain for each message why you've chosen to ignore errors/warning msgs from rpmlint.
+    :::
+    * Mention if this is your first RPM Fusion package.
+    * Mention that you are seeking for a sponsor if you are not a Fedora sponsored packager or an RPM Fusion sponsored packager.
+
+1. Add to the field **blocks** the tracker bug: `RF_NEW` ([bug #2](https://bugzilla.rpmfusion.org/show_bug.cgi?id=2)).
+
+    This way, other contributors can easily check for packages that need reviewing.
+
+1. Add to the field **blocks** the tracker bug `NEEDSPONSORS` ([bug #30](https://bugzilla.rpmfusion.org/show_bug.cgi?id=30)), if you are seeking a sponsor.
+
+    Thus, some potential sponsors will look at the NEEDSPONSORS bug to find packages to review. The only allowed sponsors in RPM Fusion are Fedora sponsors.
+
+:::important
+Please do not submit more than one package per Bugzilla entry, it would be very difficult to follow the review otherwise.
+If you have related packages, it can be handy to trace all the dependencies using the "Depends On" or "Block" Bugzilla features.
+:::
+
+## Wait for your package to be reviewed
+
+As time permits, a reviewer will review your package. A reviewer is either a Fedora sponsored packager or an RPM Fusion only sponsored packager.
+Sometimes other people add a few comments, this does not constitute a valid review.
+
+When a valid review starts, the reviewer assigns the bug to him/her, removes the blocker on `RF_NEW` and set it to block the tracker bug `RF_REVIEW` ([bug #3](https://bugzilla.rpmfusion.org/show_bug.cgi?id=2)).
+This indicates that a review is in progress.
+
+The reviewer should follow the [Fedora Review Guidelines](https://docs.fedoraproject.org/en-US/packaging-guidelines/) as closed as possible, obviously taking into account any differences between Fedora and RPM Fusion.
+
+As RPM Fusion is more permissive with the content it allows, exceptions to these guidelines are allowed in some circumstances but care and common sense should prevail.
+
+The reviewer should ensure that any deviations from the Fedora Packaging Guidelines are sane and justified in the package they are reviewing.
+If you have any doubts, please ask on the RPM Fusion mailing list.
+
+The reviewer should inform the contributor of any changes that need to be made to their package, if any.
+The contributor should update their package as necessary, including bumping the release version number, and submit the new SPEC file and source rpm URL.
+
+The reviewer should verify the changes, this is a repeated process as many times as necessary until the contributor and reviewer are happy with the final package.
+
+
+## Your package gets approved
+
+When the reviewer approves the package, the reviewer adds a comment saying that the package has been approved,
+the reviewer removes the blocker RF_REVIEW bug and sets fedora-review flag to "+". (only RPM Fusion packagers can do this).
+
+Then you can submit a package admin request in [RPM Fusion pkgdb](https://admin.rpmfusion.org/pkgdb/).
+
+:::note
+As a reminder, the namespace tag specifies the repository in which you want to import your package: [Free](docs/get-started/intro) or [Nonfree](docs/get-started/intro)
+:::
+
+### Import your package
+
+Once the git module has been created, the package must be imported.
+The only file that you have to import is the "src.rpm" file, no more and one at a time.
+
+Then, checkout the common tool and import your SRPM as follow :
+```shell
+rfpkg clone <namespace>/<package-name>
+cd <package-name>
+rfpkg import ~/<package-name>.src.rpm
+rfpkg ci -c
+rfpkg new-sources <package-name>-<version-number>.tar.gz
+rfpkg commit
+rfpkg push
+```
+
+During the GIT import procedure, your source files will be automatically tagged for the requested branch.
+
+:::info
+`namespace` is the section where your git module should be imported/go (free or nonfree).
+:::
+
+### Request a build
+
+Go to [Build a package](/docs/contribute/build-pkg) section.
+
+Once the package built successfully, go back to your bug review and add a comment to the review to notify that the import and build have been done correctly.
+Then close the bug as `RESOLVED FIXED`.
+
+
+

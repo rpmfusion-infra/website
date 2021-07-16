@@ -1,0 +1,60 @@
+---
+id: index
+title: Contribute to RPM Fusion
+sidebar_label: Become a contributor
+sidebar_position: 0
+---
+
+So, you've decided to become a contributor to RPM Fusion?
+
+This guide will lead you through the process on how to become a contributor and submit/maintain packages into RPM Fusion repositories.
+Please also have a look on the [Fedora counterpart](https://fedoraproject.org/wiki/Join_the_package_collection_maintainers)
+
+## Becoming a RPM Fusion contributor
+Having packaging experience in Fedora is much preferred, but newcomers are welcome too.
+However if you are a newcomer (as in you're not a Fedora sponsored packager) you must first get sponsored, which means find someone to guide you while you learn the process.
+
+### Create a Bugzilla Account
+In either scenario you should create your first RPM Fusion package and submit it for review as described below. The review process is handled through Bugzilla, as will be any bugs reported against your packages.
+
+Make sure you have an account in Bugzilla.
+
+The email address that you use for your Bugzilla account should be the same email address as you use for all other things related to RPM Fusion.
+
+
+### Get an RPM Fusion Account
+
+1. Create an account in the RPM Fusion [Account System]( https://admin.rpmfusion.org/accounts/)
+
+    :::note
+    **fas email** must be the same of bugzilla email (to allow be added as Point-of-contact).
+
+    :::
+
+1. Sign the CLA (if you click on the `My Account` link in the top right, you should see `CLA: CLA Done`).
+
+1. Edit your account and upload your Public RSA SSH Key (see man ssh-keygen for more information) which is required for GIT authorization.
+
+    :::info
+    It might takes up to 24 hours before the new key is synced with the rest of the infrastructure.
+    :::
+
+1. Once you get email confirmation that your account has been created and you're a member of the cla_done group, return to edit your account:
+
+1. Apply for the [packager group](https://admin.rpmfusion.org/accounts/group/view/packager).
+
+    Once this is done, your account will show up as "pending" to all of the RPM Fusion sponsors (who will receive an email).
+    When you are sponsored, you will be automatically added/approved to the rpmfusionbugs group as well. This will allow you to make changes to the state of bugs in Bugzilla, which is what you'll need to do to get them checked in. It will also allow you to do complete package reviews, including approving packages yourself!
+
+### Join the Mailing List
+Once this is done, join the Developers Mailing Lists and introduce yourself there.
+Include a link to the review request for your first package in your introduction, and if you're a newcomer also mention that you need someone to sponsor you.
+
+If you have questions about the packaging process, this is the place to ask.
+
+Also join the RPM Fusion GIT commits mailing list.
+The GIT commits mailing list is used for commit messages from the GIT repository.
+You should subscribe to this list to track the changes to all the packages.
+
+
+

@@ -1,0 +1,14 @@
+apiVersion: v2
+annotations:
+    category: application
+version: 1.0
+name: rpmfusion-website
+description: A Helm chart to deploy rpmfusion website on k8s
+type: application
+appVersion: 0.10.0
+home: https://github.com/rpmfusion-infra/website
+keywords:
+    - web
+maintainers:
+    - email: admin@rpmfusion.org
+      name: RPM Fusion Infrastructure

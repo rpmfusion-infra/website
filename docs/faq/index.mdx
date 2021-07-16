@@ -1,0 +1,141 @@
+---
+id: faq
+title: Frequently asked questions
+# sidebar_label: FA
+---
+
+## What is RPM Fusion?
+RPM Fusion is a repository of add-on packages for Fedora and EL+EPEL maintained by a group of volunteers. RPM Fusion is not a standalone repository, but an extension of Fedora. RPM Fusion distributes packages that have been deemed unacceptable to Fedora.
+
+## What packages are available from RPM Fusion?
+RPM Fusion provides packages in different repositories, each of them with rules to govern their content :
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="repositories"
+  defaultValue="free"
+  values={[
+    {label: 'Free', value: 'free'},
+    {label: 'Nonfree', value: 'nonfree'},
+    {label: 'Free Tainted', value: 'free-tainted'},
+    {label: 'Nonfree Tainted', value: 'nonfree-tainted'},
+  ]
+}>
+
+<TabItem value="free">
+Software that uses a free license, but is not accepted in Fedora for various reasons.
+Example: video players...
+Enable by installing rpmfusion-free-release package.
+</TabItem>
+
+<TabItem value="nonfree">
+Software that uses a nonfree license, but is otherwise redistributable.
+> Example: Nvidia binary drivers
+Enable by installing rpmfusion-nonfree-release package.
+Until the creation of the tainted repositories, the redistributable status was only analysed with respect to copyrights holders and not rights related to (software) reverse engineering for inter-operability purposes. The "tainted" repositories were added to fill this usage.
+</TabItem>
+
+<TabItem value="free-tainted">
+Software that use a free license, but may have usage restriction in some countries.
+Example: libdvdcss
+Enable by installing rpmfusion-free-release-tainted package.
+</TabItem>
+
+<TabItem value="nonfree-tainted">
+Software that uses a nonfree license and which is not explicitly redistributable, but is allowed for inter-operability purposes in some countries.
+
+Example: b43-firmware, nouveau-firmware, dvb-firmware.
+Enable by installing rpmfusion-nonfree-release-tainted package.
+</TabItem>
+</Tabs>
+
+
+## How do I use RPM Fusion?
+See our [Configuration guideline](/docs/get-started/intro).
+
+## What do I need to pay attention to when configuring the repositories ?
+There are a few things to note. In short: you always need to enable the matching repositories from Fedora/EPEL and RPM Fusion together. Verbose:
+
+* Packages in RPM Fusion's rawhide repositories require packages from Fedora's rawhide repositories, hence enable all rawhide repositories or none at all. Note that you have to disable all non-rawhide repositories if you want to switch completely to Fedora rawhide.
+* Packages in RPM Fusion's updates-testing repositories may require packages from fedora- or epel-updates-testing, hence enable all updates-testing repositories or none at all.
+* Packages in RPM Fusions nonfree repos repositories require packages from the free repositories, hence you can't use the **nonfree repositories** without the **free repositories**; but you on the other hand can use the free repositories without the nonfree ones.
+
+## Can I use RPM Fusion packages during the installation of Fedora?
+Yes, Anaconda (the Fedora installer) supports using external repositories during installation.
+See [Using RPM Fusion in Anaconda](https://example.com) for more information.
+
+## Why doesn't the Fedora project ship the Software that RPM Fusion offers?
+As Fedora is officially affiliated with Red Hat, Inc. in the Fedora Project, Fedora is effectively bound by the same legal restrictions as Red Hat, as a US company, is bound by. This means in particular that software encumbered with US patents cannot be included in Fedora.
+
+Fedora further only wants to ship software that is covered by Free and Open-Source-Software licenses; see [Fedora's Licensing Guidelines](http://fedoraproject.org/wiki/Licensing) and its [List of Good Licenses](http://fedoraproject.org/wiki/Licensing#SoftwareLicenses) for details.
+
+## Does RPM Fusion distribute illegal software?
+No. RPM Fusion only distributes packages which can be legally re-distributed.
+
+## How can I trust that RPM Fusion will work with the Fedora project?
+Most RPM Fusion developers are also actively involved in the Fedora project and make sure that RPM Fusion interacts properly with the distributions from Fedora. The contributors also do their best to maintain a the same quality as official Fedora packages.
+
+RPM Fusion further doesn't want to compete with Fedora -- hence RPM Fusion normally does not ship any software that is acceptable in Fedora.
+
+## What Fedora versions do you support?
+RPM Fusion ships packages for RHEL 6 and 7 (and its derivatives like CentOS, ScientificLinux and others) and all current Fedora versions (including the development branch rawhide).
+
+RPM Fusion follows the end-of-life policy of the respective "upstream" distributions. In practice this means that shortly after the upstream distribution goes EOL, shortly afterwards the corresponding RPM Fusion repository will go EOL, too. Usually the repositories will stay available for longer, but no new packages or package updates will be added to them and users are strongly encouraged to update to a non-EOL distro version. The repositories for EOLed distributions will sooner or later move to a archive page to make room for repositories for newer releases.
+
+## What architectures do you support?
+We attempt to support all possible architectures, across all supported Fedora/EL versions.
+Currently for Fedora 26 and later these are `aarch64`, `armhfp`, `i686`, `x86_64`, `ppc64` and `ppc64le`.
+EL is limited to `x86_64` (`i686` for EL6).
+
+## How do I report a bug?
+Please report all bugs using the Bugzilla. This includes bugs with RPMs as well as bugs related to infrastructure, such as this website.
+
+## I would like to see an RPM for package X. What should I do?
+Place a request in the wiki and hopefully a maintainer will decide to pick it up. If however you wish to see an additional feature added to an existing package, please file a bug against it in Bugzilla.
+
+## How can I contribute?
+You can submit your own packages, do QA on existing submissions or help fix bugs . Please see the contributors page for details.
+
+General
+## Error: Cannot retrieve repository metadata (repomd.xml) for repository: rpmfusion-foo. Please verify its path and try again
+Yum cannot connect to the RPM Fusion servers if you get above message. That could be a problem with your local network or a problem with the MirrorManager servers from RPM Fusion. If it's the latter use this comment to temporary work around the problem:
+
+```shell
+su -c "sed -i 's|^#baseurl|baseurl| ; s|^mirrorlist|#mirrorlist|' \
+    /etc/yum.repos.d/rpmfusion*free*repo"
+```
+
+To undo the change later use this command:
+```shell
+su -c "sed -i 's|^baseurl|#baseurl| ; s|^#mirrorlist|mirrorlist|' \
+    /etc/yum.repos.d/rpmfusion*free*repo"
+```
+
+Packages
+## What packages should I install to be able to play patented codecs?
+Run this command from root to get enhanced audio and video support in applications that rely on GStreamer:
+
+```shell
+dnf groupinstall multimedia ; dnf groupupdate multimedia
+```
+
+## How can I install libdvdcss?
+In some European countries, it is illegal to distribute libdvdcss in binary form. Therefore RPM Fusion has chosen to carry it in the RPM Fusion Free Tainted repository.
+
+Livna was providing libdvdcss previously.
+
+## I have a problem with one of the non-free drivers (AMD, Broadcom, NVIDIA, ...) -- can you fix it please?
+That depends on the nature of the problem. If the root cause for the problem is in the closed part of the driver then we are not able to fix it -- you have to contact the driver vendor, as only they have access to the source.
+
+RPM Fusion contributors on the other hand of course can fix issues where the packaging is the root cause. If in a doubt file a bug in Bugzilla; the driver maintainers will tell you if they can do anything to fix the issue.
+
+## I have multiple 3rd party repos enabled and yum bails out with errors.
+Mixing repositories that are not designed to be mixed can lead to trouble, hence you should better not do that. If there is something missing in RPM Fusion that please tell us, maybe we can add it, which will make everything easier for all Fedora users; or better yet, ask the maintainer of the 3rd party repository to join RPM Fusion.
+
+## How can I list all installed RPM Fusion Packages?
+Use a command like this:
+```shell
+rpm -qa --qf "%{NAME} %{PACKAGER}\n" | grep "RPM Fusion" | cut -d\  -f1 | sort
+```

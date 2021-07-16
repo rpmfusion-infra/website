@@ -1,0 +1,32 @@
+ARG NODE_VERSION=15-alpine
+FROM node:${NODE_VERSION} AS doc-builder
+
+WORKDIR /app
+
+COPY package.json yarn.lock .
+RUN yarn install --silent
+
+ENV PATH /app/node_modules/.bin:${PATH}
+
+COPY docs docs
+COPY i18n i18n
+COPY static static
+COPY src  src
+COPY *.js .
+COPY *.json .
+
+RUN yarn build
+
+# Runtime image
+FROM nginx:1.19.6-alpine AS website
+
+LABEL vendor="Rpmfusion" \
+      org.rpmfusion.appname="Website" \
+      maintainer="RPM Fusion Infrastructure <admin@rpmfusion.org>"
+
+COPY --from=doc-builder /app/build /usr/share/nginx/html
+COPY deployment/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

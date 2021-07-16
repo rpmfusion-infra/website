@@ -1,0 +1,26 @@
+{
+  "title": {
+    "message": "RPM Fusion",
+    "description": "The title in the navbar"
+  },
+  "item.label.Get started": {
+    "message": "Ça commence ici",
+    "description": "Navbar item with label Get started"
+  },
+  "item.label.Contribute": {
+    "message": "Contribuez",
+    "description": "Navbar item with label Contribute"
+  },
+  "item.label.FAQ": {
+    "message": "FAQ",
+    "description": "Navbar item with label FAQ"
+  },
+  "item.label.Sponsors": {
+    "message": "Nos sponsors",
+    "description": "Navbar item with label Sponsors"
+  },
+  "item.label.Donate": {
+    "message": "Pour faire un Don",
+    "description": "Navbar item with label Donate"
+  }
+}
