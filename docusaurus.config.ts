@@ -1,8 +1,8 @@
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
+import { themes as Theme } from 'prism-react-renderer';
 
-/** @type {import('@docusaurus/types').DocusaurusConfig} */
-module.exports = {
+const config: Config = {
   title: 'RPM Fusion',
   tagline: 'The repository add-on for Fedora, Redhat Enterprise Linux, CentOS and derivative',
   url: 'https://rpmfusion.org',
@@ -12,6 +12,9 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'rpmfusion',
   projectName: 'website',
+  future: {
+    v4: true,
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'fr'],
@@ -107,27 +110,35 @@ module.exports = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} RPM Fusion. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} RPM Fusion.`,
     },
     prism: {
-      theme: lightCodeTheme,
-      darkTheme: darkCodeTheme,
+      theme: Theme.github,
+      darkTheme: Theme.dracula,
+      additionalLanguages: ['bash', 'diff', 'json'],
     },
-  },
+  } satisfies Preset.ThemeConfig,
   presets: [
     [
-      '@docusaurus/preset-classic',
+      'classic',
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          editUrl:
-            'https://github.com/rpmfusion-infra/edit/master/website/',
+          editUrl: 'https://github.com/rpmfusion-infra/edit/master/website/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
-      },
+      } satisfies Preset.Options,
     ],
   ],
+  markdown: {
+    mdx1Compat: {
+      comments: true,
+      admonitions: true,
+      headingIds: true,
+    }
+  }
 };
+
+export default config;

@@ -156,12 +156,17 @@ These are needed for plague; without it would try to build the kmod for a i386 k
 
 # get the proper build-sysbuild package from the repo, which
 # tracks in all the kernel-devel packages
+```
 %{!?kernels:BuildRequires: buildsys-build-%{repo}-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
+```
+
 
 This line manages the BuildRequires. If user specified the "kernels" macro, then it does nothing -- kmodtool will manage the build requires. If the "kernels" macro is not set either buildsys-build-rpmfusion-kerneldevpkgs-newest or buildsys-build-rpmfusion-kerneldevpkgs-current will be used as BuildRequire. Those are managed by the repo admins and depend on the newest or all currentt kernels.
 
 # kmodtool does its magic here
+```
 %{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null) }
+```
 
 Here kmodtool does its magic -- a lot of it, thus see the next section below for the details.
 ```
@@ -187,7 +192,7 @@ done
 ```
 This extracts source0; you can apply patches afterwards if you want to. Then a directory for each kmod to be built is being created in case modules are going to be build -- that's normally the case, but not true if you only build an akmods package.
 
-Please note the "%{?kernel_versions}" macro. It's created by kmodtool and holds a list of kernel versions and where their development files get found; the two values per kernel get separated by the string "___", which makes it possible to easily reference the first or the second part of it in bash. This example bash code explains it better then words can do:
+Please note the ```%{?kernel_versions}``` macro. It's created by kmodtool and holds a list of kernel versions and where their development files get found; the two values per kernel get separated by the string "___", which makes it possible to easily reference the first or the second part of it in bash. This example bash code explains it better then words can do:
 ```
 kernel_versions="2.6.23.1-42.fc8___/usr/src/kernels/2.6.23.1-42.fc8-x86_64/ 2.6.23.1-42.fc8pae___/usr/src/kernels/2.6.23.1-42.fc8pae-x86_64/ "
 for kernel_version in ${kernel_versions} ; do
@@ -294,7 +299,7 @@ kernel ${verrel}${variant} for the %{_target_cpu} family of processors.
 
 /lib/modules/${verrel}${variant}/extra/${kmodname}/
 ```
-This macro later expands to something like the following when building for a standard kernel 2.6.23.1-42.fc8 on i686 and %{version} = 1.5; the output get inserted into the spec file before building :
+This macro later expands to something like the following when building for a standard kernel 2.6.23.1-42.fc8 on i686 and ```%{version} = 1.5```; the output get inserted into the spec file before building :
 ```
 %package       -n kmod-foo-2.6.23.1-42.fc8
 
@@ -376,9 +381,9 @@ Separate location -- don't mess up with the rest of the kernel. "extra" was pick
 kmod-foo
 
 This is a meta-package which only purpose is to depend on the latest `kmod-foo-<kernel-version>` package. Without this meta-pacakge the later would be tracked in automatically for newly released kernels, because yum can't know that kmod-ntfs-2.6.23.1-49.fc8.x86_64 is a update for kmod-ntfs-2.6.23.1-42.fc8.x86_64 and that the latter should remain installed.
-
+create
 The meta-package gets created in the function print_rpmtemplate_kmodmetapkg from kmodtool. It will create a package which looks like this:
-
+```
 %package      -n kmod-foo
 Summary:         Metapackage which tracks in foo kernel module for newest kernel
 Group:           System Environment/Kernel
@@ -391,65 +396,56 @@ to make sure you get it together with a new kernel.
 
 %files        -n kmod-foo
 %defattr(644,root,root,755)
-
+```
 macros
 
-kmodtool further creates three macros that can be used in the spec file during the %prep, %build and %install stages.
-
+kmodtool further creates three macros that can be used in the spec file during the `%prep`, `%build` and `%install` stages.
+```
 %define kmodinstdir_prefix  /lib/modules/
 %define kmodinstdir_postfix  /extra/ntfs/
 %define kernel_versions 2.6.23.1-49.fc8___%{_usrsrc}/kernels/2.6.23.1-49.fc8-%{_target_cpu} 2.6.23.1-49.fc8PAE___%{_usrsrc}/kernels/2.6.23.1-49.fc8PAE-%{_target_cpu}
-
+```
 Look above in the kmod spec file template for details how to use those three.
 
 kmods v1 versus v2
 
 There were several design issues that lead to the the overhaul named kmods v2:
 
-    kmods v1 could only build for different variants ("" (UP/Standard), SMP, Xen, ...) of one kernel-version (say 2.6.21-1.1776_FC7) in one build cycle. That became a hinderance when Fedora introduced a dedicated kernel-xen package with a different EVR than the main kernel package. The new kmods version can build for different kernel versions and variants easily and allows skipping certain variants (say for example xen) a lot easier.
-    FESCo explicitly wanted to builds kmods for only the latest kernel versions when they designed kmods v1; but sometimes there are situations where a kmod for a older kernel might be handy or needed, thus the new kmods standard allows to build for old and new kernels during one build cycle as well. To make is possible for users to get the kmods for older kernels the names need to be different, which led to slightly ugly package names for kmods, as they contain the kernel-version now in the name (e.g. kmod-foo-2.6.23.8-62.fc8-1.0-1, where kmod-foo-2.6.23.8-62.fc8 is the actually %{name}), but that solves some corner cases with dep-solvers as well.
-    the '--define "kversions foo" --define "kvariants bar"' syntax when rebuilding kmods v1 was not very intuitive for people that wanted to rebuild kmods; '--define "kernels $(uname -r)"' is a lot easier to remember and can be scripted more easily
-
-    kmodtool and a big kmodtool specific header with a lot of macros was part of many packages directly, which was not easily to maintain and looked ugly. kmodtool is now in a separate package and only needed when it comes to building the kmods (beforehand it was needed needed to determine the BuildRequires as well) 
-
-Mini-FAQ
+* kmods v1 could only build for different variants ("" (UP/Standard), SMP, Xen, ...) of one kernel-version (say 2.6.21-1.1776_FC7) in one build cycle. That became a hinderance when Fedora introduced a dedicated kernel-xen package with a different EVR than the main kernel package. The new kmods version can build for different kernel versions and variants easily and allows skipping certain variants (say for example xen) a lot easier.
+* FESCo explicitly wanted to builds kmods for only the latest kernel versions when they designed kmods v1; but sometimes there are situations where a kmod for a older kernel might be handy or needed, thus the new kmods standard allows to build for old and new kernels during one build cycle as well. To make is possible for users to get the kmods for older kernels the names need to be different, which led to slightly ugly package names for kmods, as they contain the kernel-version now in the name (e.g. kmod-foo-2.6.23.8-62.fc8-1.0-1, where kmod-foo-2.6.23.8-62.fc8 is the actually `%{name}`), but that solves some corner cases with dep-solvers as well.
+* the '--define "kversions foo" --define "kvariants bar"' syntax when rebuilding kmods v1 was not very intuitive for people that wanted to rebuild kmods; `--define "kernels $(uname -r)"` is a lot easier to remember and can be scripted more easily.
+* kmodtool and a big kmodtool specific header with a lot of macros was part of many packages directly, which was not easily to maintain and looked ugly. kmodtool is now in a separate package and only needed when it comes to building the kmods (beforehand it was needed needed to determine the BuildRequires as well).
 
 Is it possible to compile a kmod against self compiled or other kernels?
 
 Yes, easily, it's just a few steps. If you don't have a rpm build environment set one up like this
-
+```shell
 $ su -c "yum -y install rpmdevtools kmodtool kernel-devel"
 $ rpmdev-setuptree
-
+```
 Now download the kmod src.rpm to the local directory and rebuild it for the running kernel:
-
+```shell
 $ yumdownloader --source kmod-foo
 $ rpmbuild --rebuild foo-kmod*.src.rpm --define "kernels $(uname -r)" --target $(uname -m)
-
+```
 At the end of the build output you will see the names of the RPMs rpmbuild built. Use yum to install it with a command like this
-
+```shell
 $ su -c "yum --nogpgcheck install ~/rpmbuild/RPMS/i686/kmod-foo-1.0-4.i686.rpm"
+```
 
 Some notes, as above commands sometimes need some adjustments:
 
-    instead of foo insert the name of the kmod you want to rebuild
+instead of foo insert the name of the kmod you want to rebuild
+the package rpmdevtools installed in the first command contains the script rpmdev-setuptree, which creates a environment for building rpms in your home directory (~/.rpmmacros and ~/rpmbuild) the package kmodtool installed in the first command is needed for building kmods.
 
-    the package rpmdevtools installed in the first command contains the script rpmdev-setuptree, which creates a environment for building rpms in your home directory (~/.rpmmacros and ~/rpmbuild)
+If you use a special kernel variant like xen or PAE you need to install kernel-PAE-devel or kernel-xen-devel instead of kernel-devel in the first command; these packages contain the files that are needed to build kernel modules for the kernels shipped by Fedora.
 
-    the package kmodtool installed in the first command is needed for building kmods
-    if you use a special kernel variant like xen or PAE you need to install kernel-PAE-devel or kernel-xen-devel instead of kernel-devel in the first command; these packages contain the files that are needed to build kernel modules for the kernels shipped by Fedora.
-    note that yum will install the latest version of the kernel-devel packages for the latest Fedora kernels; if you didn't update and restart your system often please make sure you are running a kernel that is matching the version of the kernel-devel package
-    if you want to build a kmod for a kernel you compiled yourself you may skip installing the kernel-devel package
+Note that yum will install the latest version of the kernel-devel packages for the latest Fedora kernels; if you didn't update and restart your system often please make sure you are running a kernel that is matching the version of the kernel-devel package
 
-    note third command in the "[...]--rebuild foo-kmod*.src.rpm[...]" part contains a "*" -- normally that should match the package yumdownloader downloaded earlier, but if you have old versions around in the local directory be sure to just pick the latest one
-
-    instead of "$(uname -r)" you can use one or multiple kernel versions; e.g. "--define kernels  2.6.23.1-42.fc8 2.6.23.1-42.fc8PAE 2.6.21-2949.fc8xen" will build three kmod packages
-
-    the "--target $(uname -m)" in the third command actually is only needed on x86-32 (i386) systems
-
-    the "--nogpgcheck" in the last command is needed, because the package that was just built is unsigned
-
-    using yum to install will make sure you get the package with the userland stuff (that contains the virtual provides "foo-kmod-common") from the repos. 
+If you want to build a kmod for a kernel you compiled yourself you may skip installing the kernel-devel package note third command in the "[...]--rebuild foo-kmod*.src.rpm[...]" part contains a "*" -- normally that should match the package yumdownloader downloaded earlier, but if you have old versions around in the local directory be sure to just pick the latest one instead of `$(uname -r)` you can use one or multiple kernel versions; e.g. `--define kernels  2.6.23.1-42.fc8 2.6.23.1-42.fc8PAE 2.6.21-2949.fc8xen` will build three kmod packages
+the "--target $(uname -m)" in the third command actually is only needed on x86-32 (i386) systems
+the "--nogpgcheck" in the last command is needed, because the package that was just built is unsigned
+using yum to install will make sure you get the package with the userland stuff (that contains the virtual provides "foo-kmod-common") from the repos.
 
 What's the best way to test if the spec file actually works?
 
@@ -464,7 +460,7 @@ Do I need a special plugin for yum or other depsolvers?
 It works fine without any plugins. Maybe a plugin will be written to fix two corner cases:
 
     Case 1: if yum sees the newly releases kmods from a 3rd party repo for a newly released Fedora kernel before the Fedora mirror yum selected offers that new Fedora kernel; this leads to a "dependency not met" error by yum
-    Case 2: yum installs a newly released kernel but doesn't install the kmods for it, as they are not yet available in the repos or the mirror used; if the user reboots now the kmods will be missing, which can lead to problems as for example some popular graphic drivers will not work if the proper kernel modules are missing. Once the modules are available they can be easily installed by a simple "yum update". 
+    Case 2: yum installs a newly released kernel but doesn't install the kmods for it, as they are not yet available in the repos or the mirror used; if the user reboots now the kmods will be missing, which can lead to problems as for example some popular graphic drivers will not work if the proper kernel modules are missing. Once the modules are available they can be easily installed by a simple "yum update".
 
 Does it require special support in the buildsys of a repo?
 

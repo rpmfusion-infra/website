@@ -1,11 +1,19 @@
-import React from 'react';
+import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
 import Link from '@docusaurus/Link';
 import { isMobile } from "react-device-detect";
 
 
-const FeatureList = [
+type FeatureItem = {
+  title: string;
+  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  description: ReactNode;
+  version: string;
+  download_url: string;
+}
+
+const FeatureList: FeatureItem[] = [
   {
     title: 'Free Repository ',
     Svg: require('../../static/img/logo.svg').default,
@@ -15,8 +23,8 @@ const FeatureList = [
         which the Fedora project cannot ship due to other reasons
       </>
     ),
-    version: '34',
-    download_url: '',
+    version: '42',
+    download_url: 'https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-42.noarch.rpm',
   },
   {
     title: 'Non-Free Repository',
@@ -27,16 +35,16 @@ const FeatureList = [
         that has "no commercial use"-like restrictions
       </>
     ),
-    version: '34',
-    download_url: '',
+    version: '42',
+    download_url: 'https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-42.noarch.rpm',
   },
 ];
 
-function Feature({Svg, title, description, version, download_url}) {
+function Feature({Svg, title, description, version, download_url}: FeatureItem) {
   return (
     <div className={clsx('col col--6')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} alt={title} />
+        <Svg className={styles.featureSvg} role='img' />
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
@@ -46,7 +54,7 @@ function Feature({Svg, title, description, version, download_url}) {
       <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to={download_url}>
+            href={download_url} content='application/x-rpm'>
             Enable on Fedora {version}
           </Link>
       </div>
@@ -55,7 +63,7 @@ function Feature({Svg, title, description, version, download_url}) {
   );
 }
 
-export default function HomepageFeatures() {
+export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">

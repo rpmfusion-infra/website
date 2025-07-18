@@ -1,0 +1,10 @@
+Containerfile
+Dockerfile
+.containerignore
+node_modules/
+deployment/
+!deployment/nginx.conf
+npm-debug.log
+podman.yml
+.git
+*.tar

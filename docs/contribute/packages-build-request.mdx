@@ -9,7 +9,7 @@ sidebar_position: 3
 1. [Set up your environment](/docs/contribute/new-pkg-submit#import-your-package)
 
 1. Retrieve the package configuration (if not done already)
-    ```shell
+    ``` bash
     rfpkg clone free/my_package
     cd my_package
     ```
@@ -23,11 +23,11 @@ sidebar_position: 3
     :::
 
 1. Upload source, commit changes and push them
-    ```shell
+   ```shell
     rfpkg new-sources my_packager-1.0.tar.gz
     rfpkg commit
     rfpkg push
-    ```
+   ```
 
 1. Request a build to the koji server
     ```shell
@@ -38,10 +38,10 @@ sidebar_position: 3
     You can check the status of the build process from the [koji web interface](http://koji.rpmfusion.org/koji/tasks).
 
 
-:::tip If SSL certificate has expired
+:::info[If SSL certificate has expired]
 If during import you get the following error:
 
-> Could not execute import_srpm: (35, 'Peer reports failure of signature verification or key exchange.')
+`Could not execute import_srpm: (35, 'Peer reports failure of signature verification or key exchange.')`
 
 1. Check your certificate validity
     ```shell
