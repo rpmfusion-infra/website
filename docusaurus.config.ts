@@ -41,8 +41,7 @@ const config: Config = {
           label: 'Contribute'
         },
         {
-          type: 'doc',
-          docId: 'faq/faq',
+          to: '/faq',
           position: 'left',
           label: 'FAQ',
         },
